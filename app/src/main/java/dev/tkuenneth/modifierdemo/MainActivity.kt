@@ -4,12 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.magnifier
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.keepScreenOn
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
@@ -64,8 +67,7 @@ fun ModifierDemo() {
                             onDragStart = { touchPosition = it },
                             onDrag = { _, delta -> touchPosition += delta },
                             onDragEnd = { touchPosition = Offset.Unspecified },
-                            onDragCancel = { touchPosition = Offset.Unspecified }
-                        )
+                            onDragCancel = { touchPosition = Offset.Unspecified })
                     }
                     .magnifier(
                         sourceCenter = { touchPosition },
@@ -82,19 +84,61 @@ fun ModifierDemo() {
                     .padding(horizontal = 16.dp)
             ) {
                 MagnifierDemo(magnifierActive = magnifierActive) { magnifierActive = it }
+                KeepScreenOnDemo()
+                UriHandlerDemo()
             }
         }
     }
 }
 
 @Composable
-fun MagnifierDemo(magnifierActive: Boolean, magnifierActiveChange: (Boolean) -> Unit) {
+fun SwitchWithText(
+    active: Boolean,
+    text: String,
+    modifier: Modifier = Modifier,
+    onActiveChange: (Boolean) -> Unit
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.clickable { onActiveChange(!active) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Switch(checked = magnifierActive, onCheckedChange = magnifierActiveChange)
-        Text(stringResource(R.string.magnifier))
+        Switch(checked = active, onCheckedChange = onActiveChange)
+        Text(text)
     }
+}
+
+@Composable
+fun MagnifierDemo(magnifierActive: Boolean, magnifierActiveChange: (Boolean) -> Unit) {
+    SwitchWithText(
+        active = magnifierActive,
+        text = stringResource(R.string.magnifier),
+        onActiveChange = magnifierActiveChange
+    )
+}
+
+@Composable
+fun KeepScreenOnDemo() {
+    var keepScreenOnActive by remember { mutableStateOf(false) }
+    SwitchWithText(
+        active = keepScreenOnActive,
+        text = stringResource(R.string.keep_screen_on),
+        modifier = if (keepScreenOnActive) Modifier.keepScreenOn() else Modifier
+    ) {
+        keepScreenOnActive = it
+    }
+}
+
+@Composable
+fun ColumnScope.UriHandlerDemo() {
+    val uriHandler = LocalUriHandler.current
+    val url = stringResource(R.string.url)
+    Text(
+        text = url,
+        modifier = Modifier
+            .align(alignment = Alignment.CenterHorizontally)
+            .clickable {
+                uriHandler.openUri(url)
+            }
+    )
 }

@@ -16,3 +16,4 @@ deviceManager.xml
 appInsightsSettings.xml
 detekt.xml
 migrations.xml
+vcs.xml

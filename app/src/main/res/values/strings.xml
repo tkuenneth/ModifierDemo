@@ -2,6 +2,7 @@
     <string name="app_name">ModifierDemo</string>
     <string name="magnifier">Magnifier</string>
     <string name="keep_screen_on">Keep screen on</string>
+    <string name="context_menu">Context menu</string>
 
     <string name="url" translatable="false">https://github.com/tkuenneth/ModifierDemo</string>
 </resources>

@@ -4,15 +4,25 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.contextmenu.builder.item
+import androidx.compose.foundation.text.contextmenu.modifier.appendTextContextMenuComponents
+import androidx.compose.foundation.text.contextmenu.modifier.filterTextContextMenuComponents
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -24,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.keepScreenOn
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -64,7 +75,7 @@ fun ModifierDemo() {
                 MagnifierDemo(magnifierActive = magnifierActive) { magnifierActive = it }
                 KeepScreenOnDemo()
                 UriHandlerDemo()
-                ContextMenuDemo()
+                ContextMenuDemo(stringResource(R.string.context_menu))
             }
         }
     }
@@ -110,12 +121,38 @@ fun ColumnScope.UriHandlerDemo() {
 }
 
 @Composable
-fun ColumnScope.ContextMenuDemo() {
-//    Text(
-//        text = stringResource(R.string.context_menu),
-//        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
-//            .contextDe {
-//
-//            }
-//    )
+fun ContextMenuDemo(text: String) {
+    val state = rememberTextFieldState(text)
+    val context = LocalContext.current
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = MaterialTheme.shapes.medium
+            )
+            .padding(all = 8.dp)
+    ) {
+        BasicTextField(
+            state = state,
+            modifier = Modifier
+                .appendTextContextMenuComponents {
+                    this.item(
+                        key = ContextMenuComponentsKey.Clear,
+                        label = context.getString(R.string.clear)
+                    ) {
+                        state.clearText()
+                        close()
+                    }
+                }
+                .filterTextContextMenuComponents { component ->
+                    if (component.key == ContextMenuComponentsKey.Clear) state.text.isNotEmpty() else true
+                },
+        )
+    }
+}
+
+sealed class ContextMenuComponentsKey {
+    data object Clear : ContextMenuComponentsKey()
 }

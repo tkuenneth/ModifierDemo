@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -48,13 +47,10 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     implementation(platform(libs.androidx.compose.bom))
-    // implementation(libs.androidx.ui)
-    implementation("androidx.compose.ui:ui:1.9.0-rc01")
+    implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    // implementation(libs.androidx.foundation)
-    implementation("androidx.compose.foundation:foundation:1.9.0-rc01")
-
+    implementation(libs.androidx.foundation)
     implementation(libs.androidx.material3)
 
     testImplementation(libs.junit)

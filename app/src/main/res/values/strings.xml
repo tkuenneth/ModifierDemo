@@ -4,6 +4,7 @@
     <string name="keep_screen_on">Keep screen on</string>
     <string name="context_menu">Interact with this text to see context menus in action)</string>
     <string name="clear">Clear</string>
+    <string name="pangram">The quick brown fox jumps over the lazy dog</string>
 
     <string name="url" translatable="false">https://github.com/tkuenneth/ModifierDemo</string>
 </resources>

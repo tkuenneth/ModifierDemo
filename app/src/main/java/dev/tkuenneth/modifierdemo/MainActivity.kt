@@ -35,7 +35,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.keepScreenOn
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -80,6 +85,7 @@ fun ModifierDemo() {
                 UriHandlerDemo()
                 ContextMenuDemo(stringResource(R.string.context_menu))
                 GraphicsLayerDemo()
+//                GraphicsLayerDemo2()
             }
         }
     }
@@ -163,11 +169,35 @@ sealed class ContextMenuComponentsKey {
 }
 
 @Composable
+fun GraphicsLayerDemo() {
+    WithReflection(
+        modifier = Modifier.graphicsLayer {
+            scaleX = 1f
+            scaleY = -1f
+            alpha = 0.3f
+            rotationX = 45F
+            transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f)
+        }) { TextWithMarquee() }
+}
+
+@Composable
+fun TextWithMarquee() {
+    Text(
+        text = stringResource(R.string.pangram),
+        modifier = Modifier
+            .width(200.dp)
+            .background(color = MaterialTheme.colorScheme.tertiaryContainer)
+            .basicMarquee(),
+        style = MaterialTheme.typography.headlineLarge
+    )
+}
+
+@Composable
 fun WithReflection(
     modifier: Modifier, content: @Composable () -> Unit
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        contentAlignment = Alignment.Center
     ) {
         content()
         Box(modifier = modifier) {
@@ -177,22 +207,25 @@ fun WithReflection(
 }
 
 @Composable
-fun GraphicsLayerDemo() {
-    WithReflection(
-        modifier = Modifier.graphicsLayer {
-            scaleX = 1.08f
-            scaleY = -1.1f
-            alpha = 0.3f
-            rotationX = 45F
-            translationY = -14F
-        }) { TextWithMarquee() }
-}
-
-@Composable
-fun TextWithMarquee() {
+fun GraphicsLayerDemo2() {
+    val graphicsLayer = rememberGraphicsLayer()
     Text(
         text = stringResource(R.string.pangram),
         modifier = Modifier
+            .drawWithContent {
+                graphicsLayer.record {
+                    this@drawWithContent.drawContent()
+                }
+                drawContent()
+                with(graphicsLayer) {
+                    scaleX = 1f
+                    scaleY = -1f
+                    alpha = 0.3f
+                    rotationX = 45F
+                    pivotOffset = Offset(size.width / 2F, size.height.toFloat())
+                    drawLayer(this)
+                }
+            }
             .width(200.dp)
             .background(color = MaterialTheme.colorScheme.tertiaryContainer)
             .basicMarquee(),

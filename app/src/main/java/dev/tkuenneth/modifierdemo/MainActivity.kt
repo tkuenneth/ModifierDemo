@@ -149,7 +149,7 @@ fun ContextMenuDemo(text: String) {
             state = state,
             modifier = Modifier
                 .appendTextContextMenuComponents {
-                    this.item(
+                    item(
                         key = ContextMenuComponentsKey.Clear,
                         label = context.getString(R.string.clear)
                     ) {

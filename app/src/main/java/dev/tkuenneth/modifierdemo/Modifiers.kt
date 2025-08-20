@@ -1,6 +1,7 @@
 package dev.tkuenneth.modifierdemo
 
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.magnifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,7 +10,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.SuspendingPointerInputModifierNode
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
+import androidx.compose.ui.node.DelegatingNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.currentValueOf
+import androidx.compose.ui.platform.InspectorInfo
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 
 fun Modifier.draggableMagnifier(enabled: Boolean): Modifier = composed {
     if (enabled) {
@@ -28,5 +37,64 @@ fun Modifier.draggableMagnifier(enabled: Boolean): Modifier = composed {
         )
     } else {
         Modifier
+    }
+}
+
+fun Modifier.openUrlWhenClicked(
+    url: String,
+    onFailed: (Throwable) -> Unit = {}
+): Modifier =
+    this then OpenUrlOnClickNodeElement(
+        url = url,
+        onFailed = onFailed
+    )
+
+private data class OpenUrlOnClickNodeElement(
+    val url: String,
+    val onFailed: (Throwable) -> Unit
+) : ModifierNodeElement<OpenUrlOnClickNode>() {
+    override fun create() = OpenUrlOnClickNode(
+        url = url,
+        onFailure = onFailed
+    )
+
+    override fun update(node: OpenUrlOnClickNode) {
+        node.url = url
+        node.onFailure = onFailed
+    }
+
+    override fun InspectorInfo.inspectableProperties() {
+        name = "openUrlWhenClicked"
+        properties["url"] = url
+        properties["onFailed"] = onFailed
+    }
+}
+
+private class OpenUrlOnClickNode(
+    url: String,
+    var onFailure: (Throwable) -> Unit
+) : DelegatingNode(), CompositionLocalConsumerModifierNode {
+
+    private val pointerInputNode = SuspendingPointerInputModifierNode {
+        detectTapGestures {
+            runCatching {
+                uriHandler?.openUri(url)
+            }.onFailure { onFailure(it) }
+        }
+    }
+
+    var url: String = url
+        set(value) {
+            if (field != value) {
+                field = value
+                pointerInputNode.resetPointerInputHandler()
+            }
+        }
+
+    private val uriHandler: UriHandler?
+        get() = currentValueOf(LocalUriHandler)
+
+    init {
+        delegate(pointerInputNode)
     }
 }

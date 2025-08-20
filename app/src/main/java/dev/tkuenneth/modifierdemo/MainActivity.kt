@@ -117,18 +117,21 @@ fun UriHandlerDemo() {
     val uriHandler = LocalUriHandler.current
     val url = stringResource(R.string.url)
     Text(
-        text = url, modifier = Modifier.clickable {
+        text = url,
+//        modifier = Modifier.clickable {
 //                try {
 //                    uriHandler.openUri(url)
 //                } catch (_: IllegalArgumentException) {
 //                    // Do something
 //                }
-            runCatching {
-                uriHandler.openUri(url)
-            }.onFailure {
-                // Do something
-            }
-        })
+//            runCatching {
+//                uriHandler.openUri(url)
+//            }.onFailure {
+//                // Do something
+//            }
+//        }
+        modifier = Modifier.openUrlWhenClicked(url) { /* Do something */ }
+    )
 }
 
 @Composable

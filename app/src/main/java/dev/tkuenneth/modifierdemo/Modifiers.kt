@@ -71,7 +71,7 @@ private data class OpenUrlOnClickNodeElement(
 }
 
 private class OpenUrlOnClickNode(
-    url: String,
+    initialUrl: String,
     var onFailure: (Throwable) -> Unit
 ) : DelegatingNode(), CompositionLocalConsumerModifierNode {
 
@@ -83,7 +83,7 @@ private class OpenUrlOnClickNode(
         }
     }
 
-    var url: String = url
+    var url: String = initialUrl
         set(value) {
             if (field != value) {
                 field = value

@@ -40,37 +40,37 @@ fun Modifier.draggableMagnifier(enabled: Boolean): Modifier = composed {
     }
 }
 
-fun Modifier.openUrlWhenClicked(
+fun Modifier.openUrl(
     url: String,
-    onFailed: (Throwable) -> Unit = {}
+    onFailure: (Throwable) -> Unit = {}
 ): Modifier =
-    this then OpenUrlOnClickNodeElement(
+    this then OpenUrlModifierNodeElement(
         url = url,
-        onFailed = onFailed
+        onFailure = onFailure
     )
 
-private data class OpenUrlOnClickNodeElement(
+private data class OpenUrlModifierNodeElement(
     val url: String,
-    val onFailed: (Throwable) -> Unit
-) : ModifierNodeElement<OpenUrlOnClickNode>() {
-    override fun create() = OpenUrlOnClickNode(
+    val onFailure: (Throwable) -> Unit
+) : ModifierNodeElement<OpenUrlModifierNode>() {
+    override fun create() = OpenUrlModifierNode(
         initialUrl = url,
-        onFailure = onFailed
+        onFailure = onFailure
     )
 
-    override fun update(node: OpenUrlOnClickNode) {
+    override fun update(node: OpenUrlModifierNode) {
         node.url = url
-        node.onFailure = onFailed
+        node.onFailure = onFailure
     }
 
     override fun InspectorInfo.inspectableProperties() {
-        name = "openUrlWhenClicked"
+        name = "openUrl"
         properties["url"] = url
-        properties["onFailed"] = onFailed
+        properties["onFailure"] = onFailure
     }
 }
 
-private class OpenUrlOnClickNode(
+private class OpenUrlModifierNode(
     initialUrl: String,
     var onFailure: (Throwable) -> Unit
 ) : DelegatingNode(), CompositionLocalConsumerModifierNode {

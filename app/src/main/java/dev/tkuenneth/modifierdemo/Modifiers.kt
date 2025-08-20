@@ -54,7 +54,7 @@ private data class OpenUrlOnClickNodeElement(
     val onFailed: (Throwable) -> Unit
 ) : ModifierNodeElement<OpenUrlOnClickNode>() {
     override fun create() = OpenUrlOnClickNode(
-        url = url,
+        initialUrl = url,
         onFailure = onFailed
     )
 

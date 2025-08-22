@@ -98,3 +98,14 @@ private class OpenUrlModifierNode(
         delegate(pointerInputNode)
     }
 }
+
+inline fun Modifier.conditional(
+    condition: Boolean,
+    block: Modifier.() -> Modifier
+): Modifier {
+    return if (condition) {
+        then(block(Modifier))
+    } else {
+        this
+    }
+}

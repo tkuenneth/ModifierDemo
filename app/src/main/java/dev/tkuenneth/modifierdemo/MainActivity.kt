@@ -105,7 +105,8 @@ fun KeepScreenOnDemo() {
     SwitchWithText(
         active = keepScreenOnActive,
         text = stringResource(R.string.keep_screen_on),
-        modifier = if (keepScreenOnActive) Modifier.keepScreenOn() else Modifier
+//        modifier = if (keepScreenOnActive) Modifier.keepScreenOn() else Modifier
+        modifier = Modifier.conditional(keepScreenOnActive) { keepScreenOn() }
     ) {
         keepScreenOnActive = it
     }

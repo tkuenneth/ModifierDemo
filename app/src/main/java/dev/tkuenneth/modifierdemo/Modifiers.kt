@@ -112,7 +112,7 @@ inline fun Modifier.conditional(
     block: Modifier.() -> Modifier
 ): Modifier {
     return if (condition) {
-        then(block(Modifier))
+        then(block())
     } else {
         this
     }

@@ -55,7 +55,7 @@ private data class OpenUrlModifierNodeElement(
 ) : ModifierNodeElement<OpenUrlModifierNode>() {
     override fun create() = OpenUrlModifierNode(
         initialUrl = url,
-        onFailure = onFailure
+        initialOnFailure = onFailure
     )
 
     override fun update(node: OpenUrlModifierNode) {
@@ -72,7 +72,7 @@ private data class OpenUrlModifierNodeElement(
 
 private class OpenUrlModifierNode(
     initialUrl: String,
-    var onFailure: (Throwable) -> Unit
+    initialOnFailure: (Throwable) -> Unit
 ) : DelegatingNode(), CompositionLocalConsumerModifierNode {
 
     private val pointerInputNode = SuspendingPointerInputModifierNode {
@@ -84,6 +84,14 @@ private class OpenUrlModifierNode(
     }
 
     var url: String = initialUrl
+        set(value) {
+            if (field != value) {
+                field = value
+                pointerInputNode.resetPointerInputHandler()
+            }
+        }
+
+    var onFailure: (Throwable) -> Unit = initialOnFailure
         set(value) {
             if (field != value) {
                 field = value

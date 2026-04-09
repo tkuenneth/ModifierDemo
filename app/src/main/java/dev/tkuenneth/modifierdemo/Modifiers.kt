@@ -78,7 +78,7 @@ private class OpenUrlModifierNode(
     private val pointerInputNode = SuspendingPointerInputModifierNode {
         detectTapGestures {
             runCatching {
-                uriHandler?.openUri(url)
+                uriHandler.openUri(url)
             }.onFailure { onFailure(it) }
         }
     }
@@ -99,7 +99,7 @@ private class OpenUrlModifierNode(
             }
         }
 
-    private val uriHandler: UriHandler?
+    private val uriHandler: UriHandler
         get() = currentValueOf(LocalUriHandler)
 
     init {
